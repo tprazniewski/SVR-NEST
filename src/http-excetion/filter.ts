@@ -4,9 +4,9 @@ import {
   ArgumentsHost,
   HttpException,
   HttpStatus,
-} from '@nestjs/common';
-import { AbstractHttpAdapter } from '@nestjs/core';
-import { MongoError } from 'mongodb';
+} from "@nestjs/common";
+import { AbstractHttpAdapter } from "@nestjs/core";
+import { MongoError } from "mongodb";
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -18,16 +18,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
-    console.log('yhy', exception.constructor);
-    // if (exception instanceof ValidationError) {
-    //   console.log('weszlooooo');
-    // }
 
     if (exception instanceof HttpException) {
       return httpAdapter.reply(
         ctx.getResponse(),
         exception.getResponse(),
-        httpStatus,
+        httpStatus
       );
     }
 
