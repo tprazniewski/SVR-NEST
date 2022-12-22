@@ -3,22 +3,22 @@ import {
   NotFoundException,
   Inject,
   forwardRef,
-} from '@nestjs/common';
-import { Group, GroupDocument } from './group.model';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { nameOrIdQuery } from '../utils/nameOrIdQuery';
-import { DeviceService } from '../device/device.service';
-import { CreateGroupDto } from './dto/create-group-dto';
-import { nameOrObjectIdQuery } from '../utils/nameOrObjectIdQuery';
-import { Ifilter } from '../utils/interfaces';
+} from "@nestjs/common";
+import { Group, GroupDocument } from "./group.model";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { nameOrIdQuery } from "../utils/nameOrIdQuery";
+import { DeviceService } from "../device/device.service";
+import { CreateGroupDto } from "./dto/create-group-dto";
+import { nameOrObjectIdQuery } from "../utils/nameOrObjectIdQuery";
+import { Ifilter } from "../utils/interfaces";
 
 @Injectable()
 export class GroupService {
   constructor(
     @InjectModel(Group.name) private groupModel: Model<GroupDocument>,
     @Inject(forwardRef(() => DeviceService))
-    private deviceService: DeviceService,
+    private deviceService: DeviceService
   ) {}
 
   async createGroup(name: CreateGroupDto): Promise<Group> {
@@ -53,19 +53,19 @@ export class GroupService {
     const group = await this.groupModel.findOneAndUpdate(
       filter,
       { $push: { devices: deviceId } },
-      { upsert: true, new: true },
+      { upsert: true, new: true }
     );
     return group;
   }
 
   async deleteOrUpdateByFilter(
     deviceId: string,
-    filter: Ifilter,
+    filter: Ifilter
   ): Promise<Group> {
     const group = await this.groupModel.findOneAndUpdate(
       filter,
       { $pull: { devices: deviceId } },
-      { upsert: true, new: true },
+      { upsert: true, new: true }
     );
     return group;
   }
@@ -76,7 +76,7 @@ export class GroupService {
         _id,
       },
       { $pull: { devices: deviceId } },
-      { upsert: true, new: true },
+      { upsert: true, new: true }
     );
     return group;
   }
@@ -95,18 +95,18 @@ export class GroupService {
 
   async addToGroup(
     groupIdOrName: string,
-    deviceIdOrName: string,
+    deviceIdOrName: string
   ): Promise<Group> {
     let group;
     let device;
     let deviceId;
     device = await this.deviceService.getByFilter(
-      nameOrIdQuery(deviceIdOrName),
+      nameOrIdQuery(deviceIdOrName)
     );
 
     if (!device) {
       throw new NotFoundException(
-        `deviceId with id: ${deviceIdOrName} not found`,
+        `deviceId with id: ${deviceIdOrName} not found`
       );
     }
     deviceId = device._id.toString();
@@ -118,10 +118,10 @@ export class GroupService {
 
   async deleteFromGroup(
     groupIdOrName: string,
-    deviceIdOrName: string,
+    deviceIdOrName: string
   ): Promise<Group> {
     let device = await this.deviceService.getByFilter(
-      nameOrIdQuery(deviceIdOrName),
+      nameOrIdQuery(deviceIdOrName)
     );
 
     if (!device) {
@@ -131,7 +131,7 @@ export class GroupService {
 
     let group = await this.deleteOrUpdateByFilter(
       deviceId,
-      nameOrIdQuery(groupIdOrName),
+      nameOrIdQuery(groupIdOrName)
     );
     if (group.devices.length === 0) {
       await this.deleteGroupByFilter(nameOrIdQuery(groupIdOrName));
@@ -140,37 +140,37 @@ export class GroupService {
     return group;
   }
 
-  async getFilesByGroupId(nameOrId: string) {
+  async getFilesByGroupId(nameOrId: string): Promise<string[]> {
     const files = await this.groupModel.aggregate([
       { $match: nameOrObjectIdQuery(nameOrId) },
-      { $unwind: '$devices' },
+      { $unwind: "$devices" },
       {
         $addFields: {
-          deviceId: { $toObjectId: '$devices' },
+          deviceId: { $toObjectId: "$devices" },
         },
       },
       {
         $lookup: {
-          from: 'devices',
-          localField: 'deviceId',
-          foreignField: '_id',
-          as: 'deviceDetails',
+          from: "devices",
+          localField: "deviceId",
+          foreignField: "_id",
+          as: "deviceDetails",
         },
       },
-      { $unwind: '$deviceDetails' },
+      { $unwind: "$deviceDetails" },
       {
         $group: {
-          _id: '$_id',
-          files: { $push: '$deviceDetails.files' },
+          _id: "$_id",
+          files: { $push: "$deviceDetails.files" },
         },
       },
       {
         $project: {
           uniqueFiles: {
             $reduce: {
-              input: '$files',
+              input: "$files",
               initialValue: [],
-              in: { $setUnion: ['$$value', '$$this'] },
+              in: { $setUnion: ["$$value", "$$this"] },
             },
           },
           _id: 0,
