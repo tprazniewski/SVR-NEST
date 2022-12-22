@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Seeder, DataFactory } from 'nestjs-seeder';
+import { Seeder } from 'nestjs-seeder';
 import { Device } from './device.model';
 
 @Injectable()

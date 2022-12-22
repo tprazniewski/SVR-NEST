@@ -8,7 +8,6 @@ import {
   Put,
 } from '@nestjs/common';
 import { GroupService } from './group.service';
-import { CreateDeviceDto } from '../device/dto/create-device-dto';
 import { CreateGroupDto } from './dto/create-group-dto';
 
 @Controller('groups')

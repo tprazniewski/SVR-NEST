@@ -4,7 +4,6 @@ import { DeviceModule } from 'src/device/device.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Group, GroupSchema } from './group.model';
 import { GroupController } from './group.controller';
-import { DeviceSchema } from '../device/device.model';
 
 @Module({
   imports: [
