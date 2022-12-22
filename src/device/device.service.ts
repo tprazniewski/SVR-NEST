@@ -13,6 +13,7 @@ import { Model } from 'mongoose';
 import { CreateDeviceDto } from './dto/create-device-dto';
 import { nameOrIdQuery } from '../utils/nameOrIdQuery';
 import { GroupService } from '../group/group.service';
+import { Ifilter } from '../utils/interfaces';
 
 @Injectable()
 export class DeviceService {
@@ -45,7 +46,8 @@ export class DeviceService {
         }
       }
     }
-    return this.deviceModel.deleteOne({ _id });
+    const result = await this.deviceModel.deleteOne({ _id });
+    return result;
   }
 
   async getDeviceById(_id): Promise<Device> {
@@ -63,19 +65,16 @@ export class DeviceService {
     const device = await this.deviceModel.findOneAndUpdate(
       nameOrIdQuery(idOrName),
       name,
-      {
-        new: true,
-      },
     );
     return device;
   }
 
-  async create(createDevice: any): Promise<any> {
+  async create(createDevice: any): Promise<Device> {
     const newDevice = new this.deviceModel(createDevice);
-    await newDevice.save();
+    return await newDevice.save();
   }
 
-  async getByFilter(filter: any): Promise<any> {
+  async getByFilter(filter: Ifilter): Promise<Device> {
     return this.deviceModel.findOne(filter);
   }
 

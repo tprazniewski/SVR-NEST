@@ -12,6 +12,7 @@ import { MongoError } from 'mongodb';
 export class AllExceptionsFilter implements ExceptionFilter {
   constructor(private readonly httpAdapterHost: AbstractHttpAdapter) {}
   catch(exception: unknown, host: ArgumentsHost): void {
+    console.log('exce', exception);
     const httpAdapter = this.httpAdapterHost;
     const ctx = host.switchToHttp();
     const httpStatus =

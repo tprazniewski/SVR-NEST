@@ -10,8 +10,8 @@ import { Model } from 'mongoose';
 import { nameOrIdQuery } from '../utils/nameOrIdQuery';
 import { DeviceService } from '../device/device.service';
 import { CreateGroupDto } from './dto/create-group-dto';
-
-const { ObjectID } = require('mongodb');
+import { nameOrObjectIdQuery } from '../utils/nameOrObjectIdQuery';
+import { Ifilter } from '../utils/interfaces';
 
 @Injectable()
 export class GroupService {
@@ -48,7 +48,8 @@ export class GroupService {
     return found;
   }
 
-  async createOrUpdate(deviceId: any, filter: any): Promise<Group> {
+  async createOrUpdate(deviceId: string, filter: Ifilter): Promise<Group> {
+    console.log(filter);
     const group = await this.groupModel.findOneAndUpdate(
       filter,
       { $push: { devices: deviceId } },
@@ -57,7 +58,10 @@ export class GroupService {
     return group;
   }
 
-  async deleteOrUpdateByFilter(deviceId: string, filter): Promise<Group> {
+  async deleteOrUpdateByFilter(
+    deviceId: string,
+    filter: Ifilter,
+  ): Promise<Group> {
     const group = await this.groupModel.findOneAndUpdate(
       filter,
       { $pull: { devices: deviceId } },
@@ -85,11 +89,14 @@ export class GroupService {
     });
   }
 
-  async deleteGroupByFilter(filter) {
+  async deleteGroupByFilter(filter: Ifilter) {
     return this.groupModel.deleteOne(filter);
   }
 
-  async addToGroup(groupIdOrName: string, deviceIdOrName: string) {
+  async addToGroup(
+    groupIdOrName: string,
+    deviceIdOrName: string,
+  ): Promise<Group> {
     let group;
     let device;
     let deviceId;
@@ -109,7 +116,10 @@ export class GroupService {
     return group;
   }
 
-  async deleteFromGroup(groupIdOrName: string, deviceIdOrName: string) {
+  async deleteFromGroup(
+    groupIdOrName: string,
+    deviceIdOrName: string,
+  ): Promise<Group> {
     let device = await this.deviceService.getByFilter(
       nameOrIdQuery(deviceIdOrName),
     );
@@ -123,7 +133,6 @@ export class GroupService {
       deviceId,
       nameOrIdQuery(groupIdOrName),
     );
-    console.log('group', group);
     if (group.devices.length === 0) {
       await this.deleteGroupByFilter(nameOrIdQuery(groupIdOrName));
     }
@@ -131,11 +140,9 @@ export class GroupService {
     return group;
   }
 
-  async getFilesByGroupId(id: string) {
-    const _id = new ObjectID(id);
-
+  async getFilesByGroupId(nameOrId: string) {
     const files = await this.groupModel.aggregate([
-      { $match: { _id } },
+      { $match: nameOrObjectIdQuery(nameOrId) },
       { $unwind: '$devices' },
       {
         $addFields: {
