@@ -7,7 +7,7 @@ import {
 } from "@nestjs/common";
 import { AbstractHttpAdapter } from "@nestjs/core";
 import { MongoError } from "mongodb";
-
+import { Error } from "mongoose";
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   constructor(private readonly httpAdapterHost: AbstractHttpAdapter) {}
@@ -25,6 +25,16 @@ export class AllExceptionsFilter implements ExceptionFilter {
         exception.getResponse(),
         httpStatus
       );
+    }
+
+    if (exception instanceof Error.ValidationError) {
+      if (exception.errors.name.kind === "unique") {
+        const responseBody = {
+          status: HttpStatus.FORBIDDEN,
+          error: `We don't accept duplicatess`,
+        };
+        return httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
+      }
     }
 
     const responseBody = {
