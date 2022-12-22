@@ -49,7 +49,6 @@ export class GroupService {
   }
 
   async createOrUpdate(deviceId: string, filter: Ifilter): Promise<Group> {
-    console.log(filter);
     const group = await this.groupModel.findOneAndUpdate(
       filter,
       { $push: { devices: deviceId } },

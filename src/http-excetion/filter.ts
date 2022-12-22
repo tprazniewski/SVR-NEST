@@ -4,15 +4,14 @@ import {
   ArgumentsHost,
   HttpException,
   HttpStatus,
-} from '@nestjs/common';
-import { AbstractHttpAdapter } from '@nestjs/core';
-import { MongoError } from 'mongodb';
+} from "@nestjs/common";
+import { AbstractHttpAdapter } from "@nestjs/core";
+import { MongoError } from "mongodb";
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   constructor(private readonly httpAdapterHost: AbstractHttpAdapter) {}
   catch(exception: unknown, host: ArgumentsHost): void {
-    console.log('exce', exception);
     const httpAdapter = this.httpAdapterHost;
     const ctx = host.switchToHttp();
     const httpStatus =
@@ -24,7 +23,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       return httpAdapter.reply(
         ctx.getResponse(),
         exception.getResponse(),
-        httpStatus,
+        httpStatus
       );
     }
 
