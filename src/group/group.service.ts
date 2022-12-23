@@ -44,7 +44,7 @@ export class GroupService {
     const group = await this.groupModel.findOneAndUpdate(
       filter,
       { $push: { devices: deviceId } },
-      { upsert: true, new: true },
+      { upsert: true },
     );
     return group;
   }
@@ -97,7 +97,7 @@ export class GroupService {
 
     if (!device) {
       throw new NotFoundException(
-        `deviceId with id: ${deviceIdOrName} not found`,
+        `deviceId with idOrName: ${deviceIdOrName} not found`,
       );
     }
     deviceId = device._id.toString();
@@ -116,7 +116,9 @@ export class GroupService {
     );
 
     if (!device) {
-      throw new NotFoundException(`deviceId with id: ${device} not found`);
+      throw new NotFoundException(
+        `deviceId with idOrName: ${device} not found`,
+      );
     }
     let deviceId = device._id.toString();
 

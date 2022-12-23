@@ -24,9 +24,10 @@ export class DeviceController {
     return this.deviceService.createDevice(createDeviceDto);
   }
 
-  @Get('/:id')
-  getDevice(@Param('id') id: string) {
-    return this.deviceService.getDeviceById(id);
+  @Get('/:idOrName')
+  getDevice(@Param('idOrName') idOrName: string) {
+    console.log(idOrName);
+    return this.deviceService.getDeviceByIdOrName(idOrName);
   }
 
   @Delete('/:id')
@@ -34,11 +35,19 @@ export class DeviceController {
     return this.deviceService.deleteDeviceById(id);
   }
 
-  @Put('/:oldName')
-  updateDevice(
-    @Param('oldName') oldName: string,
-    @Body() name: { name: string },
+  @Put('/:nameOrId/files/:file')
+  updateDeviceFile(
+    @Param('nameOrId') nameOrId: string,
+    @Param('file') file: string,
   ) {
-    return this.deviceService.updateDevice(oldName, name);
+    return this.deviceService.updateDeviceFile(nameOrId, file);
+  }
+
+  @Delete('/:nameOrId/files/:file')
+  deleteDeviceFile(
+    @Param('nameOrId') nameOrId: string,
+    @Param('file') file: string,
+  ) {
+    return this.deviceService.deleteDeviceFile(nameOrId, file);
   }
 }

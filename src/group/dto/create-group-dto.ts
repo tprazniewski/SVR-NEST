@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class CreateGroupDto {
-    @IsOptional()
-    @IsNotEmpty()
-    name: string;
-
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  name: string;
 }

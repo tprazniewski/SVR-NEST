@@ -1,12 +1,7 @@
-import {IsNotEmpty, IsOptional, IsArray} from "class-validator";
+import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateDeviceDto {
-    @IsOptional()
-    @IsNotEmpty()
-    name: string;
-
-    @IsOptional()
-    @IsNotEmpty()
-    @IsArray()
-    files: string[];
+export class UpdateDeviceDto {
+  @IsString()
+  @IsNotEmpty()
+  file: string;
 }

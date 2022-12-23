@@ -47,25 +47,43 @@ export class DeviceService {
     return result;
   }
 
-  async getDeviceById(_id): Promise<Device> {
-    const device = await this.deviceModel.findOne({ _id });
+  async getDeviceByIdOrName(idOrName): Promise<Device> {
+    const device = await this.deviceModel.findOne(nameOrIdQuery(idOrName));
     if (!device) {
-      throw new NotFoundException(`deviceId with id: ${_id} not found`);
+      throw new NotFoundException(
+        `deviceId with idOrName: ${idOrName} not found`,
+      );
     }
     return device;
   }
 
-  async updateDevice(
-    idOrName: string,
-    name: { name: string },
-  ): Promise<Device> {
+  async updateDeviceFile(idOrName: string, file: string): Promise<Device> {
     const device = await this.deviceModel.findOneAndUpdate(
       nameOrIdQuery(idOrName),
-      name,
+      { $push: { files: file } },
+      { new: true },
     );
+    if (!device) {
+      throw new NotFoundException(
+        `deviceId with idOrName: ${idOrName} not found`,
+      );
+    }
     return device;
   }
+  async deleteDeviceFile(idOrName: string, file: string): Promise<Device> {
+    const device = await this.deviceModel.findOneAndUpdate(
+      nameOrIdQuery(idOrName),
+      { $pull: { files: file } },
+      { new: true },
+    );
+    if (!device) {
+      throw new NotFoundException(
+        `deviceId with idOrName: ${idOrName} not found`,
+      );
+    }
 
+    return device;
+  }
   async create(createDevice: any): Promise<Device> {
     const newDevice = new this.deviceModel(createDevice);
     return await newDevice.save();
@@ -73,9 +91,5 @@ export class DeviceService {
 
   async getByFilter(filter: Ifilter): Promise<Device> {
     return this.deviceModel.findOne(filter);
-  }
-
-  async findByIds(ids: string[]): Promise<Device[]> {
-    return this.deviceModel.find({ _id: { $in: ids } });
   }
 }
