@@ -4,6 +4,7 @@ export const nameOrIdQuery = (idOrName) => {
     if (String(new ObjectId(idOrName)) === idOrName) {
       return { _id: idOrName };
     }
+
+    return { name: idOrName };
   }
-  return { name: idOrName };
 };
