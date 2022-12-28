@@ -48,7 +48,8 @@ export class DeviceService {
   }
 
   async getDeviceByIdOrName(idOrName): Promise<Device> {
-    const device = await this.deviceModel.findOne(nameOrIdQuery(idOrName));
+    const result = nameOrIdQuery(idOrName);
+    const device = await this.deviceModel.findOne(result);
     if (!device) {
       throw new NotFoundException(
         `deviceId with idOrName: ${idOrName} not found`,

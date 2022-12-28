@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { DeviceService } from './device.service';
 import { CreateDeviceDto } from './dto/create-device-dto';
+import { idOrNameDto } from './dto/idOrName-dto';
 
 @Controller('devices')
 export class DeviceController {
@@ -25,9 +26,8 @@ export class DeviceController {
   }
 
   @Get('/:idOrName')
-  getDevice(@Param('idOrName') idOrName: string) {
-    console.log(idOrName);
-    return this.deviceService.getDeviceByIdOrName(idOrName);
+  getDevice(@Param() idOrName: idOrNameDto) {
+    return this.deviceService.getDeviceByIdOrName(idOrName.idOrName);
   }
 
   @Delete('/:id')
