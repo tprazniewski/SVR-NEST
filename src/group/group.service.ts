@@ -72,10 +72,10 @@ export class GroupService {
     return group;
   }
 
-  async findByOneElementOfDevice(name: string) {
+  async findByOneElementOfDevice(id: string) {
     return this.groupModel.find({
       devices: {
-        $in: name,
+        $in: id,
       },
     });
   }

@@ -10,7 +10,9 @@ import { Model } from 'mongoose';
 import { CreateDeviceDto } from './dto/create-device-dto';
 import { nameOrIdQuery } from '../utils/nameOrIdQuery';
 import { GroupService } from '../group/group.service';
-import { Ifilter } from '../utils/interfaces';
+import { Ifilter, IcreateDevice } from '../utils/interfaces';
+
+const ObjectId = require('mongoose').Types.ObjectId;
 
 @Injectable()
 export class DeviceService {
@@ -28,7 +30,11 @@ export class DeviceService {
     return this.deviceModel.create(createDeviceDto);
   }
 
-  async deleteDeviceById(_id): Promise<any> {
+  async deleteDeviceById(_id): Promise<Device> {
+    if (!ObjectId.isValid(_id)) {
+      const test = await this.getDeviceByIdOrName(_id);
+      _id = test._id;
+    }
     const listOfGroups = await this.groupService.findByOneElementOfDevice(_id);
     if (listOfGroups) {
       for (let i = 0; i < listOfGroups.length; i++) {
@@ -43,8 +49,7 @@ export class DeviceService {
         }
       }
     }
-    const result = await this.deviceModel.deleteOne({ _id });
-    return result;
+    return this.deviceModel.findOneAndDelete({ _id });
   }
 
   async getDeviceByIdOrName(idOrName): Promise<Device> {
@@ -71,6 +76,7 @@ export class DeviceService {
     }
     return device;
   }
+
   async deleteDeviceFile(idOrName: string, file: string): Promise<Device> {
     const device = await this.deviceModel.findOneAndUpdate(
       nameOrIdQuery(idOrName),
@@ -85,7 +91,8 @@ export class DeviceService {
 
     return device;
   }
-  async create(createDevice: any): Promise<Device> {
+
+  async create(createDevice: IcreateDevice): Promise<Device> {
     const newDevice = new this.deviceModel(createDevice);
     return await newDevice.save();
   }

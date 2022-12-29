@@ -10,6 +10,7 @@ import {
 import { DeviceService } from './device.service';
 import { CreateDeviceDto } from './dto/create-device-dto';
 import { idOrNameDto } from './dto/idOrName-dto';
+import { FileDto } from './dto/file-dto';
 
 @Controller('devices')
 export class DeviceController {
@@ -30,24 +31,24 @@ export class DeviceController {
     return this.deviceService.getDeviceByIdOrName(idOrName.idOrName);
   }
 
-  @Delete('/:id')
-  deleteDevice(@Param('id') id: string) {
-    return this.deviceService.deleteDeviceById(id);
+  @Delete('/:idOrName')
+  deleteDevice(@Param('idOrName') idOrName: string) {
+    return this.deviceService.deleteDeviceById(idOrName);
   }
 
-  @Put('/:nameOrId/files/:file')
+  @Put('/:idOrName/files/:file')
   updateDeviceFile(
-    @Param('nameOrId') nameOrId: string,
-    @Param('file') file: string,
+    @Param('idOrName') idOrName: idOrNameDto,
+    @Param('file') file: FileDto,
   ) {
-    return this.deviceService.updateDeviceFile(nameOrId, file);
+    return this.deviceService.updateDeviceFile(idOrName.idOrName, file.file);
   }
 
-  @Delete('/:nameOrId/files/:file')
+  @Delete('/:idOrName/files/:file')
   deleteDeviceFile(
-    @Param('nameOrId') nameOrId: string,
-    @Param('file') file: string,
+    @Param('idOrName') idOrName: idOrNameDto,
+    @Param('file') file: FileDto,
   ) {
-    return this.deviceService.deleteDeviceFile(nameOrId, file);
+    return this.deviceService.deleteDeviceFile(idOrName.idOrName, file.file);
   }
 }
